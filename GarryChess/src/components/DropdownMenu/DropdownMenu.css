@@ -1,0 +1,11 @@
+.DropdownMenu {
+    background-color: #cfcecc;
+    opacity: .5;
+}
+
+.DropdownMenuButton{
+    height: 50px;
+}
+.DropdownMenuButton:hover{
+    background-color: #82827c;
+}

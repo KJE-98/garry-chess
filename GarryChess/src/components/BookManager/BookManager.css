@@ -1,0 +1,20 @@
+.BookManager {
+    max-height: 500px;
+    overflow: scroll;
+    cursor: pointer;
+}
+
+.card {
+    display: inline-block;
+    aspect-ratio: 1;
+    border-style: dotted;
+    width: 30vw;
+    max-width: 100px;
+    margin: 20px;
+    vertical-align: bottom;
+    background-color: #c0c0c2;
+ }
+
+ .card>div:hover {
+     background-color: #d1d1de;
+ }
