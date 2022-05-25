@@ -8,26 +8,36 @@ const recordRoutes = express.Router();
 // This will help us connect to the database
 const dbo = require('../db/conn');
 
-// This section will help you get a list of all the documents.
-recordRoutes.route("/listings").get(async function (req, res) {
+// This section will help you get a users information.
+recordRoutes.route("/users").get(async function (req, res) {
+    console.log(req.query.id);
+    if ( req.query.id.length < 10 ){
+      res.status(400).send("User_id is too short");
+      return;
+    }
+
     const dbConnect = dbo.getDb();
-  
+
     dbConnect
-      .collection("listingsAndReviews")
-      .find({}).limit(50)
+      .collection("garry_chess_users")
+      .find({ user_id : req.query.id }).limit(1)
       .toArray(function (err, result) {
         if (err) {
-          res.status(400).send("Error fetching listings!");
+          res.status(400).send("Error fetching user!");
        } else {
           res.json(result);
         }
       });
   });
 
-// I think we can delete this function above ^^^, I cant think of a use for it
-
 // This section will help you create a new user.
 recordRoutes.route("/users/recordUser").post(function (req, res) {
+    if ( req.body.id.length < 10 ){
+      console.log( "sending user_id is too short, userid: " + req.body.id);
+      res.status(400).send("User_id is too short");
+      return;
+    }
+
     const dbConnect = dbo.getDb();
     const userDocument = {
       user_id: req.body.id,
@@ -41,13 +51,17 @@ recordRoutes.route("/users/recordUser").post(function (req, res) {
           res.status(400).send("Error inserting matches!");
         } else {
           console.log(`Added a new user with id ${result.insertedId}`);
-          res.status(204).send();
+          res.status(204).send("OK");
         }
       });
   });
 
 // This section will help you update a book.
 recordRoutes.route("/users/addToBook").post(function (req, res) {
+    if ( req.body.id.length < 10 ){
+      res.status(400).send("User_id is too short");
+      return;
+    }
     const dbConnect = dbo.getDb();
     const listingQuery = { user_id: req.body.id };
     const updates = {
@@ -68,44 +82,53 @@ recordRoutes.route("/users/addToBook").post(function (req, res) {
           res.status(400).send(`Error updating likes on listing with id ${listingQuery.id}!`);
         } else {
           console.log("1 document updated");
+          res.status(204).send("OK");
         }
       });
   });
 
 // This section will help you delete a book.
-recordRoutes.route("/listings/deleteBook").post((req, res) => {
+recordRoutes.route("/deleteBook/:id/:bookName").delete((req, res) => {
     const dbConnect = dbo.getDb();
-    const listingQuery = { user_id: req.body.id };
+    console.log(req.params.id);
+    console.log(req.params.bookName);
+    const listingQuery = { user_id: req.params.id };
     updates = {
-      $pull: { books: { bookName : req.body.bookName } }
+      $pull: { books: { bookName : req.params.bookName } }
     }
 
     dbConnect
       .collection("garry_chess_users")
       .updateOne(listingQuery, updates, function (err, _result) {
         if (err) {
-          res.status(400).send(`Error deleting listing with id ${listingQuery.listing_id}!`);
+          res.status(400).send(`Error deleting listing with id ${req.params.bookName}!`);
         } else {
-          console.log("1 document deleted");
+          console.log("1 book deleted");
+          res.status(204).send("OK");
         }
       });
   });
 
 // This section will help you create a book.
-recordRoutes.route("/listings/createBook").post((req, res) => {
+recordRoutes.route("/createBook").post((req, res) => {
+  if ( req.body.id.length < 10 || req.body.bookName.length < 1 ){
+    res.status(400).send("User_id or bookname is too short");
+    return;
+  }
   const dbConnect = dbo.getDb();
   const listingQuery = { user_id: req.body.id };
   updates = {
-    $addToSet: { books: { bookName: req.body.bookName, positions: [] } }
+    $addToSet: { books: { bookName: req.body.bookName, color: req.body.color, positions: [] } }
   }
 
   dbConnect
     .collection("garry_chess_users")
-    .updateOne(listingQuery, updates, function (err, _result) {
+    .updateOne(listingQuery, updates, { upsert: false }, function (err, _result) {
       if (err) {
         res.status(400).send(`Error deleting listing with id ${listingQuery.listing_id}!`);
       } else {
-        console.log("1 document deleted");
+        console.log("book created");
+        res.status(204).send("OK");
       }
     });
 });

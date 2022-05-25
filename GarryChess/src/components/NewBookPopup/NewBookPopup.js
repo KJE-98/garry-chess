@@ -5,7 +5,9 @@ import './NewBookPopup.css';
 const NewBookPopup = (props) => {
 
   function newBook() {
-    props.customEventListener({action: "newBook", name: "kian's book"});
+    props.customEventListener({action: "newbook",
+                               name: document.getElementById("bookNameInput").value,
+                               color: document.getElementById("bookColorInput").checked});
   }
   function exit() {
     props.customEventListener({action: "exit"});
@@ -13,7 +15,8 @@ const NewBookPopup = (props) => {
 
   return(
     <div className="NewBookPopup">
-      <input></input>
+      <input id="bookNameInput"/>
+      <input type="checkbox" id="bookColorInput"/>
       <span onClick={newBook}> auto generate positions </span>
     </div>
   );

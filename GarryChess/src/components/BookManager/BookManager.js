@@ -10,20 +10,23 @@ const BookManager = (props) => {
 
   // function called by the AddPositionPopup Componenet when it needs to interact with BookManager component
   let customEventListener_addposition = (e) => {
-    props.customEventListener({action: 'addposition', name: props.booksInfo[addingPositionTo-1].title});
+    props.customEventListener({action: 'addposition',
+                               name: props.booksInfo.books[addingPositionTo-1].book_id,
+                               color: props.booksInfo.books[addingPositionTo-1].color});
     setAddingPositionTo(-1);
   }
 
   // function called by the NewBookPopup component when it needs to interact with BookManager component
   let customEventListener_newbook = (e) => {
-    props.customEventListener({action: 'newbook', name: e.name});
+    props.customEventListener({action: 'newbook', name: e.name, color: e.color });
     setAddingPositionTo(-1);
   }
 
-  let booksInfoList = props.booksInfo.map(
-    (info, index) => <div className="card">
+  let booksInfoList = props.booksInfo.books.map(
+    (info, index) => <div key={info.bookName + ":" + info.color} className="card">
+      <h4>{info.bookName}</h4>
       <div onClick={()=>{props.customEventListener({action: 'reset'});setAddingPositionTo(index+1);}}>Add Position</div>
-      <div onClick={()=>{props.customEventListener({action: 'delete', name: info.title})}}>Delete Book</div>
+      <div onClick={()=>{props.customEventListener({action: 'deletebook', name: info.bookName})}}>Delete Book</div>
     </div>
   )
 

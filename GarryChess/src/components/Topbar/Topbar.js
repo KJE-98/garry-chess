@@ -6,7 +6,7 @@ import Spinner from '../Spinner/Spinner.js';
 const Topbar = (props) => {
   const [booksInfo, setBooksInfo] = useState({});
   let updateUserID = () => {
-    props.customEventListener({action: "updateuserid", id: document.getElementById('userid').innerText});
+    props.customEventListener({action: "updateuserid", id: document.getElementById('userid').value});
   }
 
   return (
@@ -14,8 +14,9 @@ const Topbar = (props) => {
     <h2>
         Garry Chess
     </h2>
-    <Spinner books = {booksInfo}> </Spinner>
-    <input id="userid" onInput={updateUserID}></input>
+    <h3> {props.userID ? props.userID : " not logged in "} </h3>
+    <input id="userid"></input>
+    <button onClick={updateUserID} > New User / Login </button>
   </div>
   );
 };

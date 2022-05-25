@@ -3,6 +3,11 @@
     padding: 20px;
 }
 
+.Topbar > h3{
+    display: inline;
+    padding: 20px;
+}
+
 .Topbar {
     text-align: left;
     height: 60px;
@@ -12,4 +17,10 @@
     position: absolute;
     right: 10px;
     top: 10px;
+}
+
+.Topbar > button {
+    position: absolute;
+    right: 10px;
+    top: 35px;
 }
