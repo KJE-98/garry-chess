@@ -11,7 +11,7 @@ const BookManager = (props) => {
   // function called by the AddPositionPopup Componenet when it needs to interact with BookManager component
   let customEventListener_addposition = (e) => {
     props.customEventListener({action: 'addposition',
-                               name: props.booksInfo.books[addingPositionTo-1].book_id,
+                               name: props.booksInfo.books[addingPositionTo-1].bookName,
                                color: props.booksInfo.books[addingPositionTo-1].color});
     setAddingPositionTo(-1);
   }

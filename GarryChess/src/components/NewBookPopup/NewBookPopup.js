@@ -7,7 +7,7 @@ const NewBookPopup = (props) => {
   function newBook() {
     props.customEventListener({action: "newbook",
                                name: document.getElementById("bookNameInput").value,
-                               color: document.getElementById("bookColorInput").checked});
+                               color: document.getElementById("bookColorInput").checked ? 'b' : 'w'});
   }
   function exit() {
     props.customEventListener({action: "exit"});

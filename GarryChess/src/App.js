@@ -22,6 +22,7 @@ function App() {
   const [game, setGame] = useState(new Chess());
   const [userID, setUserID] = useState("");
   const [userInfoFromDB, setUserInfoFromDB] = useState({books: [{bookName: "defualt", color: 'w', positions: []}]});
+  const [currentBook, setCurrentBook] = useState(null);
 
   async function getUserData(userid) {
     try {
@@ -103,18 +104,11 @@ function App() {
   }
 
   async function safeChangeData(callback, userid, ...args) {
-    console.log("callback:");
-    console.log(callback);
-    console.log("before Callback");
     let cbreturn = await callback(userid, ...args);
-    console.log("promise?");
-    console.log(cbreturn);
     let newData = await getUserData(userid);
-    console.log("newData");
-    console.log(newData);
     setUserInfoFromDB(newData[0]);
-    console.log("newdata");
-    console.log(userInfoFromDB);
+    console.log("data was set to");
+    console.log(newData[0]);
   }
 
   // functions that will be called directly (besides getUserData)
@@ -124,9 +118,12 @@ function App() {
   }
 
   async function newPositions(bookName, color) {
-    console.log("new positions");
+    console.log("new positions to " + bookName);
     let positions = await Functions.generatePositions(game.fen(), color, 1000);
+    console.log("pso");
+    console.log(positions);
     await safeChangeData(addPositions, userID, bookName, positions);
+    console.log("after safe add pos");
   }
 
   async function newUser(userid) {
