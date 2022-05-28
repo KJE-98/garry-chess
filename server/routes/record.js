@@ -62,11 +62,12 @@ recordRoutes.route("/users/addToBook").post(function (req, res) {
       res.status(400).send("User_id is too short");
       return;
     }
+    console.log(req.body.bookName, req.body.id);
     const dbConnect = dbo.getDb();
     const listingQuery = { user_id: req.body.id };
     const updates = {
       $addToSet: {
-        "books.$[book].positions": req.body.positions
+        "books.$[book].positions": { $each: req.body.positions }
       },
     };
     const arrayFilters = {

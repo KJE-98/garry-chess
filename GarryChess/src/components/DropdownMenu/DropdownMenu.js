@@ -5,14 +5,19 @@ import BookManager from '../BookManager/BookManager';
 
 const DropdownMenu = (props) =>{
   const [expanded, setExpanded] = useState(false);
-  
+  let status = props.status;
+  let setStatus = props.setStatus;
+
   let customEventListener_bookmanager = (e) => {
     props.customEventListener(e);
   }
   return (
     <div className="DropdownMenu">
       <div className="DropdownMenuButton" onClick={() => {setExpanded(!expanded)}}>Manage Books</div>
-      { expanded && <BookManager booksInfo={props.booksInfo} customEventListener={customEventListener_bookmanager} expanded = {expanded}></BookManager> }
+      { expanded && <BookManager booksInfo={props.booksInfo}
+                                 customEventListener={customEventListener_bookmanager}
+                                 status = {status}
+                                 setStatus = {setStatus}></BookManager> }
     </div>
   );
 }

@@ -1,3 +1,48 @@
 .ChessboardMask {
+    display: inline-block;
     margin: 20px;
 }
+
+.sections {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.sectionsOuter {
+    display: inline-block;
+}
+
+.statusBarThin {
+    height: 80px;
+    width: 30vw;
+    background-color: aliceblue;
+    border-radius: 10px;
+    margin: 20px;
+    vertical-align: top;
+}
+
+.statusBarWide {
+    height: 80px;
+    width: 60vw;
+    background-color: aliceblue;
+    border-radius: 10px;
+    margin: 20px;
+    vertical-align: top;
+}
+
+.sections >  .thin {
+    height: 80px;
+    width: 30vw;
+    border-radius: 10px;
+    margin: 20px;
+    border: solid 1px;
+}
+
+.sections >  .wide {
+    height: 80px;
+    width: 60vw;
+    border-radius: 10px;
+    margin: 20px;
+    border: solid 1px;
+}
+

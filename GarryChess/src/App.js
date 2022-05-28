@@ -8,13 +8,6 @@ import { Chess } from 'chess.js';
 import * as Functions from './ImportantFunctions.js';
 import axios from 'axios';
 
-function getRandomPosition(bookName){
-  console.log("getting random position from " + bookName);
-}
-
-// MAKE ALL API CALLS ONLY RELY ON PARAMETERS
-
-
 function App() {
 
   // all the main data needed for the application should be declared here
@@ -22,13 +15,14 @@ function App() {
   const [game, setGame] = useState(new Chess());
   const [userID, setUserID] = useState("");
   const [userInfoFromDB, setUserInfoFromDB] = useState({books: [{bookName: "defualt", color: 'w', positions: []}]});
-  const [currentBook, setCurrentBook] = useState(null);
+  const [status, setStatus] = useState([0,0,0]);
+
+  // API calls
 
   async function getUserData(userid) {
     try {
       let response = await axios.get("http://localhost:5000/users", { params: { id: userid } } );
       if (response.statusText == "OK"){
-        console.log(response.data)
         return response.data;
       }else {
         console.log("Error inn getUserData");
@@ -138,8 +132,32 @@ function App() {
     await safeChangeData(deleteBook, userID, bookName);
   }
 
+  function randomPosition(bookName) {
+    console.log("randPos info");
+    console.log(bookName);
+    for (let book of userInfoFromDB.books){
+      console.log(book.bookName)
+      if (book.bookName == bookName){
+        let positions = book.positions;
+        let len = positions.length;
+        if (len === 0){
+            return "no positions"
+        }
+        else {
+          let randIndex = Math.floor(Math.random() * len);
+          return positions[ randIndex ];
+        }
+      }
+    }
+    return "no book";
+  }
+
+  // Event handling
+
   // function called by the Dropdown when it needs to interact with App component
   let customEventListener_dropdown = async (e) => {
+    setStatus([0,0,0]);
+
     if (e.action === "reset")
       newGame();
     if (e.action === "deletebook")
@@ -148,7 +166,6 @@ function App() {
       newPositions(e.name, e.color);
     if (e.action === "newbook")
       newBook(e.name, e.color);
-
   };
 
   // function called by the topbar when it needs to interact with App component
@@ -195,12 +212,12 @@ function App() {
     let bestMove = bestMoves[0];
     safeMakeMove({ from: bestMove.slice(0,2), to: bestMove.slice(2,4) });
   }
-  function onDrop(sourceSquare, targetSquare) {
+  function onDrop(pieceMove) {
     let move = null;
     safeGameMutate((game) => {
       move = game.move({
-        from: sourceSquare,
-        to: targetSquare,
+        from: pieceMove.sourceSquare,
+        to: pieceMove.targetSquare,
         promotion: "q", // always promote to a queen for simplicity
       });
     });
@@ -209,12 +226,18 @@ function App() {
     return true;
   }
 
+  let getNewPosition = ()=>{
+    let newPosition = randomPosition(status[1]);
+    safeGameMutate(()=>game.load(newPosition));
+  }
+
   // return
   return (
     <div className="App">
       <Topbar customEventListener={customEventListener_topbar} userID={userID}></Topbar>
-      <DropdownMenu booksInfo={userInfoFromDB} customEventListener={customEventListener_dropdown}></DropdownMenu>
-      <ChessboardMask fen={game.fen()} onDrop={onDrop}></ChessboardMask>
+      <DropdownMenu booksInfo={userInfoFromDB} customEventListener={customEventListener_dropdown}
+                    status={status} setStatus={setStatus}></DropdownMenu>
+      <ChessboardMask getNewPosition={getNewPosition} status={status} fen={game.fen()} onDrop={onDrop}></ChessboardMask>
       <header className="App-header">
       </header>
     </div>
