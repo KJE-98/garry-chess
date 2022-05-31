@@ -22,5 +22,43 @@
 .Topbar > button {
     position: absolute;
     right: 10px;
-    top: 35px;
+    top: 5px;
+    height: 35px
+}
+
+.modal {
+    font-size: 12px;
+    background-color: aliceblue;
+    opacity: .95;
+    border-radius: 8px;
+    padding: 5px;
+}
+.modal > .header {
+    width: 100%;
+    border-bottom: 1px solid gray;
+    font-size: 18px;
+    text-align: center;
+    margin: 2px;
+}
+.modal > .content {
+    width: 100%;
+    margin: 10px 2px;
+}
+.modal > .actions {
+    width: 100%;
+    padding: 10px 5px;
+    margin: auto;
+    text-align: center;
+}
+.modal > .close {
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    padding: 2px 5px;
+    line-height: 20px;
+    right: -5px;
+    top: -5px;
+    font-size: 24px;
+    background: #ffffff;
+    border: 1px solid #cfcece;
 }

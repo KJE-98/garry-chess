@@ -13,36 +13,54 @@
 }
 
 .statusBarThin {
+    font-family: 'Courier New', Courier, monospace;
+    text-align: left;
+    padding: 10px;
     height: 80px;
     width: 30vw;
-    background-color: aliceblue;
+    background-color: rgb(249, 246, 246);
     border-radius: 10px;
     margin: 20px;
     vertical-align: top;
+    box-shadow: 0px 0px 3px 3px rgb(187, 187, 187);
+    font-size: calc(1.1vw + .7vh);
 }
 
 .statusBarWide {
+
+    font-family: 'Courier New', Courier, monospace;
+    text-align: left;
+    padding: 10px;
     height: 80px;
     width: 60vw;
-    background-color: aliceblue;
+    background-color: rgb(249, 246, 246);
     border-radius: 10px;
     margin: 20px;
     vertical-align: top;
+    box-shadow: 0px 0px 3px 3px rgb(187, 187, 187);
+    font-size: calc(1.1vw + .7vh + 1.1vmin);
 }
 
 .sections >  .thin {
     height: 80px;
-    width: 30vw;
+    width: calc(30vw + 20px);
     border-radius: 10px;
     margin: 20px;
-    border: solid 1px;
+    border: 1px solid;
 }
 
 .sections >  .wide {
     height: 80px;
-    width: 60vw;
+    width: calc(60vw + 20px);
     border-radius: 10px;
     margin: 20px;
-    border: solid 1px;
+    border: 1px solid;
 }
 
+.sections >  .thin:hover {
+    box-shadow: 0px 0px 1px 1px rgb(111, 146, 146);
+}
+
+.sections >  .wide:hover {
+    box-shadow: 0px 0px 1px 1px rgb(111, 146, 146);
+}

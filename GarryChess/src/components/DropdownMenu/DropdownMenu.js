@@ -13,7 +13,7 @@ const DropdownMenu = (props) =>{
   }
   return (
     <div className="DropdownMenu">
-      <div className="DropdownMenuButton" onClick={() => {setExpanded(!expanded)}}>Manage Books</div>
+      <button className="DropdownMenuButton" onClick={(e) => {e.preventDefault(); return setExpanded(!expanded)}}>Manage Books</button>
       { expanded && <BookManager booksInfo={props.booksInfo}
                                  customEventListener={customEventListener_bookmanager}
                                  status = {status}

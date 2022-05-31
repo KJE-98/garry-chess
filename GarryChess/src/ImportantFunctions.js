@@ -39,7 +39,7 @@ export async function generatePositions(rootPos, color, eloLevel) {
     let positions = [rootPos];
     let newPositions = [];
 
-    if (game.turn() == color){
+    if (game.turn() === color){
       allPositions.push(rootPos);
     }
     for (let i = 0; i<5; i++)
@@ -48,7 +48,7 @@ export async function generatePositions(rootPos, color, eloLevel) {
       {
         game.load(position);
         
-        if (game.turn() == color){
+        if (game.turn() === color){
           game.load(position);
           let move = await getBestMove(position);
           game.move({ from: move.slice(0,2), to: move.slice(2,4) });

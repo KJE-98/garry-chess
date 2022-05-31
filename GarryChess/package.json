@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
     "chess.js": "^0.13.2",
+    "chessboard-arrows": "^1.0.2",
     "chessboardjsx": "^2.4.7",
     "mongo": "^0.1.0",
     "mongodb": "4.5",
@@ -15,6 +16,7 @@
     "react-chessboard": "^1.2.4",
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
+    "reactjs-popup": "^2.0.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

@@ -17,7 +17,7 @@ const NewBookPopup = (props) => {
     <div className="NewBookPopup">
       <input id="bookNameInput"/>
       <input type="checkbox" id="bookColorInput"/>
-      <span onClick={newBook}> auto generate positions </span>
+      <button onClick={newBook}> auto generate positions </button>
     </div>
   );
 }

@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './Topbar.css';
 import Spinner from '../Spinner/Spinner.js';
+import Popup from 'reactjs-popup';
 
 const Topbar = (props) => {
   const [booksInfo, setBooksInfo] = useState({});
-  let updateUserID = () => {
-    props.customEventListener({action: "updateuserid", id: document.getElementById('userid').value});
+  let login = () => {
+    props.customEventListener({action: "login", id: document.getElementById('userid').value});
+  }
+
+  let createID = () => {
+    props.customEventListener({action: "createid", id: document.getElementById('createuserid').value});
   }
 
   return (
@@ -15,8 +20,30 @@ const Topbar = (props) => {
         Garry Chess
     </h2>
     <h3> {props.userID ? props.userID : " not logged in "} </h3>
-    <input id="userid"></input>
-    <button onClick={updateUserID} > New User / Login </button>
+    <Popup trigger={ open => <button>Login/Create Account</button>} closeOnDocumentClick position="center center" modal>
+      {close =>
+        <div className='modal'>
+          <div className='header'> Log in </div>
+          <button className='close' onClick={close}>&times;</button>
+          <div className='content'>
+            {' '}
+            Log in with an existing id
+          </div>
+          <div className="actions">
+            <input id='userid'></input>
+            <button onClick={login}>Login</button>
+          </div>
+          <div className='content'>
+            {' '}
+            Or, create a new id (at least 10 characters)
+          </div>
+          <div className="actions">
+            <input id='createuserid'></input>
+            <button onClick={createID}>Create Account</button>
+          </div>
+        </div>
+      }
+    </Popup>
   </div>
   );
 };

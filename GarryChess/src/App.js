@@ -1,4 +1,5 @@
 
+// Fix castling issue with lichess
 import './App.css';
 import React, { useState } from 'react';
 import Topbar from './components/Topbar/Topbar.js'
@@ -7,6 +8,7 @@ import ChessboardMask from './components/ChessboardMask/ChessboardMask';
 import { Chess } from 'chess.js';
 import * as Functions from './ImportantFunctions.js';
 import axios from 'axios';
+import Popup from 'reactjs-popup';
 
 function App() {
 
@@ -16,13 +18,14 @@ function App() {
   const [userID, setUserID] = useState("");
   const [userInfoFromDB, setUserInfoFromDB] = useState({books: [{bookName: "defualt", color: 'w', positions: []}]});
   const [status, setStatus] = useState([0,0,0]);
+  const [sqstyles, setSqstyles] = useState({});
 
   // API calls
 
   async function getUserData(userid) {
     try {
       let response = await axios.get("http://localhost:5000/users", { params: { id: userid } } );
-      if (response.statusText == "OK"){
+      if (response.statusText === "OK"){
         return response.data;
       }else {
         console.log("Error inn getUserData");
@@ -37,7 +40,7 @@ function App() {
   async function addUser(userid) {
     try {
       let response = await axios.post("http://localhost:5000/users/recordUser", { id: userid });
-      if (response.status == 204){
+      if (response.status === 204){
         console.log("new user created");
       }else {
         console.log("Error inn newUser");
@@ -52,7 +55,7 @@ function App() {
   async function addPositions(userid, bookName, positions) {
     try {
       let response = await axios.post("http://localhost:5000/users/addToBook", { id: userid, bookName: bookName, positions: positions});
-      if (response.status == 204){
+      if (response.status === 204){
         console.log("positions added");
       }else {
         console.log("Error inn addPositions");
@@ -70,7 +73,7 @@ function App() {
       console.log("before axios.delete in del book");
       let response = await axios.delete(`http://localhost:5000/deleteBook/${userid}/${bookName}`);
       console.log("after response in delete book");
-      if (response.status == 204){
+      if (response.status === 204){
         console.log("book deleted");
       }else {
         console.log("Error inn deleteBook");
@@ -85,7 +88,7 @@ function App() {
   async function createBook(userid, bookName, color) {
     try {
       let response = await axios.post("http://localhost:5000/createBook", { id: userid, bookName: bookName, color: color});
-      if (response.status == 204){
+      if (response.status === 204){
         console.log("book created");
       }else {
         console.log("Error inn createBook");
@@ -122,7 +125,8 @@ function App() {
 
   async function newUser(userid) {
     if (userid < 10){
-      console.log("userID too short");
+      console.log("idtooshort");
+      //handleError("idtooshort");
     } else {
       await safeChangeData(addUser, userid);
     }
@@ -137,7 +141,7 @@ function App() {
     console.log(bookName);
     for (let book of userInfoFromDB.books){
       console.log(book.bookName)
-      if (book.bookName == bookName){
+      if (book.bookName === bookName){
         let positions = book.positions;
         let len = positions.length;
         if (len === 0){
@@ -170,18 +174,16 @@ function App() {
 
   // function called by the topbar when it needs to interact with App component
   let customEventListener_topbar = async (e) => {
-    if (e.action == "updateuserid"){
-      console.log(e.id);
+    if (e.action === "login"){
       setUserID(e.id);
       let userData = await getUserData(e.id);
-      console.log("userData");
-      console.log(userData);
-      if (Array.isArray(userData) && userData.length === 0){
-        console.log("creating new user" + e.id);
-        newUser(e.id);
-      } else {
+      if (Array.isArray(userData) && userData.length > 0){
         setUserInfoFromDB(userData[0]);
+      } else {
+        //handleError();
       }
+    } else if (e.action === "createuserid") {
+      newUser(e.id);
     }
   };
 
@@ -192,6 +194,7 @@ function App() {
       modify(update);
       return update;
     });
+    setSqstyles({});
   }
   function safeMakeMove(move){
     safeGameMutate(()=>{
@@ -214,6 +217,7 @@ function App() {
   }
   function onDrop(pieceMove) {
     let move = null;
+    let prevFen = game.fen();
     safeGameMutate((game) => {
       move = game.move({
         from: pieceMove.sourceSquare,
@@ -222,11 +226,27 @@ function App() {
       });
     });
     if (move === null) return false; // illegal move
-    setTimeout(makeGoodMove, 1000);
+    if (status[0] === "learning"){
+      handleGuess(prevFen, move);
+    }
     return true;
   }
+  async function handleGuess(fen, guess) {
+    let best = await Functions.getBestMove(fen);
+    let guessIsBest = best.slice(0,2) === guess.from && best.slice(2,4) === guess.to;
+    if (guessIsBest){
 
-  let getNewPosition = ()=>{
+    }
+    else {
+      safeGameMutate((game)=>{game.undo()});
+      setTimeout( ()=>{
+        safeMakeMove({ from: best.slice(0,2), to: best.slice(2,4) });
+        setSqstyles( { [best.slice(0,2)]: {backgroundColor: "orange"}, [best.slice(2,4)]: {backgroundColor: "orange"} } );},
+        500);
+    }
+  }
+  let getNewPosition = () =>
+  {
     let newPosition = randomPosition(status[1]);
     safeGameMutate(()=>game.load(newPosition));
   }
@@ -237,7 +257,7 @@ function App() {
       <Topbar customEventListener={customEventListener_topbar} userID={userID}></Topbar>
       <DropdownMenu booksInfo={userInfoFromDB} customEventListener={customEventListener_dropdown}
                     status={status} setStatus={setStatus}></DropdownMenu>
-      <ChessboardMask getNewPosition={getNewPosition} status={status} fen={game.fen()} onDrop={onDrop}></ChessboardMask>
+      <ChessboardMask sqstyles={sqstyles} getNewPosition={getNewPosition} status={status} fen={game.fen()} onDrop={onDrop}></ChessboardMask>
       <header className="App-header">
       </header>
     </div>

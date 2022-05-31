@@ -8,7 +8,7 @@ const AddPositionPopup = (props) => {
   }
 
   return (<div className="AddPositionPopup">
-    <div onClick={addPosition}> Auto generate positions </div>
+    <button onClick={addPosition}> Auto generate positions </button>
   </div>)
 };
 
