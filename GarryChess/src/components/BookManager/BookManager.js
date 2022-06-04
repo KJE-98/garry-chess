@@ -31,12 +31,16 @@ const BookManager = (props) => {
     (info, index) =>
     <button key={info.bookName + ":" + info.color} className="card" onClick={()=>{setStatus(['learning', info.bookName, 0])}}>
       <h4>{info.bookName + ", \n" + info.color + ", \n" + info.elo}</h4>
+      { props.userID !== "" &&
       <div onClick={(e)=>{e.stopPropagation();props.customEventListener({action: 'reset'}); setStatus(["adding positions", index, 0]);}}>
         <span>Add to</span>
       </div>
+      }
+      { props.userID &&
       <div onClick={(e)=>{e.stopPropagation();props.customEventListener({action: 'deletebook', name: info.bookName})}}>
         <span>delete</span>
       </div>
+      }
     </button>
   )
 
@@ -45,11 +49,13 @@ const BookManager = (props) => {
       <div className="BookManager">
         <div className='flexboxContainer'>
           {booksInfoList}
+          { props.userID &&
           <button className="card" onClick={()=>{props.customEventListener({action: 'reset'});
                                               setStatus(["adding book", 0, 0]);
                                               }}>
             <span>New Book</span>
           </button>
+          }
         </div>
       </div>
       { status[0] === "adding positions" && <AddPositionPopup customEventListener={customEventListener_addposition}></AddPositionPopup> }

@@ -7,6 +7,7 @@ const DropdownMenu = (props) =>{
   const [expanded, setExpanded] = useState(false);
   let status = props.status;
   let setStatus = props.setStatus;
+  let userID = props.userID;
 
   let customEventListener_bookmanager = (e) => {
     props.customEventListener(e);
@@ -17,7 +18,8 @@ const DropdownMenu = (props) =>{
       { expanded && <BookManager booksInfo={props.booksInfo}
                                  customEventListener={customEventListener_bookmanager}
                                  status = {status}
-                                 setStatus = {setStatus}></BookManager> }
+                                 setStatus = {setStatus}
+                                 userID={userID}></BookManager> }
     </div>
   );
 }

@@ -289,7 +289,7 @@ function App() {
   return (
     <div className="App">
       <Topbar customEventListener={customEventListener_topbar} userID={userID}></Topbar>
-      <DropdownMenu booksInfo={userInfoFromDB} customEventListener={customEventListener_dropdown}
+      <DropdownMenu userID={userID} booksInfo={userInfoFromDB} customEventListener={customEventListener_dropdown}
                     status={status} setStatus={setStatus}></DropdownMenu>
       <ChessboardMask
           booksInfo={userInfoFromDB} sqstyles={sqstyles}

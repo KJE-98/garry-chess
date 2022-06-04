@@ -7,6 +7,9 @@
     display: inline-block;
     aspect-ratio: 1;
     width: 15vw;
+    height: 15vw;
+    max-height: 130px;
+    min-height: 90px;
     max-width: 130px;
     min-width: 90px;
     margin: 20px;

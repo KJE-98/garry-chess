@@ -43,7 +43,7 @@ export async function generatePositions(rootPos, color, eloLevel) {
     if (game.turn() === color){
       allPositions.push(rootPos);
     }
-    for (let i = 0; i<8; i++)
+    for (let i = 0; i<6; i++)
     {
       for (let position of positions)
       {
