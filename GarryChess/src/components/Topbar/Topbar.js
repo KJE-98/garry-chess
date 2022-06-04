@@ -5,7 +5,6 @@ import Spinner from '../Spinner/Spinner.js';
 import Popup from 'reactjs-popup';
 
 const Topbar = (props) => {
-  const [booksInfo, setBooksInfo] = useState({});
   let login = () => {
     props.customEventListener({action: "login", id: document.getElementById('userid').value});
   }

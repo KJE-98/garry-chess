@@ -1,4 +1,11 @@
 .NewBookPopup {
-    height: 50px;
     cursor: pointer;
+}
+
+.NewBookPopup > h5 {
+    display: inline;
+}
+
+input[type="checkbox"] {
+    background: aqua;
 }

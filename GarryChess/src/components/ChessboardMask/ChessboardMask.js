@@ -18,8 +18,32 @@ const ChessboardMask = (props) => {
   function statusMessage (status){
     if (status[0] === 0)
       return "To get started, log in or create a new user in the upper right";
-    if (status[0] == "learning"){
+    if (status[0] === "learning"){
+      if (status[2]==="correct"){
+        return (<>
+                  <div>
+                    {"Learning from book: " + status[1]}
+                  </div>
+                  <div>
+                    Correct
+                  </div>
+                </>);
+      }
+      if (status[2]==="incorrect"){
+        return (<>
+                  <div>
+                    {"Learning from book: " + status[1]}
+                  </div>
+                  <div>
+                    Incorrect
+                  </div>
+                </>);
+      }
       return "Learning from book: " + status[1];
+    }
+    if (status[0] === "adding positions"){
+      return "to add to the book: " + props.booksInfo.books[status[1]].bookName + ", play until you reach the desired position on the board, "
+      + "and click, \"auto generate positions\"";
     }
   }
 
@@ -30,7 +54,10 @@ const ChessboardMask = (props) => {
                     calcWidth={()=> !thinDisplay ? window.innerWidth/2 : window.innerWidth-50} />
       </div>
       <div className="sections">
-        <div className={ !thinDisplay ? 'statusBarThin' : 'statusBarWide' }>
+        <div className={ !thinDisplay ? 'statusBarThin' : 'statusBarWide' }
+                style={{ backgroundColor:  props.status[2] === "correct"   ?  "lightblue"
+                                         : props.status[2] === "incorrect" ?  "orange"
+                                         :                                    "#F6F6F9" }}>
           {statusMessage(props.status)}
         </div>
         <button className={ !thinDisplay ? 'thin' : 'wide' } onClick={props.getNewPosition}>

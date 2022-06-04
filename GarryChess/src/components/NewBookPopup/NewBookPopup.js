@@ -1,13 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './NewBookPopup.css';
+import LabeledSwitchMaterialUi from 'labeled-switch-material-ui';
 
 const NewBookPopup = (props) => {
+  let color = 'w';
 
   function newBook() {
+    if (document.getElementById("bookNameInput").value === ""){
+      document.getElementById("bookNameInput").style.backgroundColor = "lightblue"
+      return;
+    }
     props.customEventListener({action: "newbook",
                                name: document.getElementById("bookNameInput").value,
-                               color: document.getElementById("bookColorInput").checked ? 'b' : 'w'});
+                               color: color,
+                               elo: document.getElementById("elolevel").value });
   }
   function exit() {
     props.customEventListener({action: "exit"});
@@ -15,9 +22,14 @@ const NewBookPopup = (props) => {
 
   return(
     <div className="NewBookPopup">
-      <input id="bookNameInput"/>
-      <input type="checkbox" id="bookColorInput"/>
-      <button onClick={newBook}> auto generate positions </button>
+      <button onClick={newBook}> Create book </button>
+      <h5> with name </h5><input id="bookNameInput"/>
+      <h5>playing as </h5>
+      <LabeledSwitchMaterialUi labelLeft=' w' labelRight='b' onChange={(knobOnLeft)=>{color = knobOnLeft ? 'w':'b'}}
+              styleLabelLeft={{color: "black"}} styleLabelRight={{color: "black"}}>
+      </LabeledSwitchMaterialUi>
+      <h5>, with opponent elo level of </h5>
+      <input type="number" id="elolevel" min={100} max={2200} onInput={()=>{document.getElementById("elolevel").value = parseInt(document.getElementById("elolevel").value)}}></input>
     </div>
   );
 }

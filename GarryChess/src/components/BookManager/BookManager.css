@@ -6,12 +6,25 @@
 .card {
     display: inline-block;
     aspect-ratio: 1;
-    border-style: dotted;
-    width: 30vw;
-    max-width: 100px;
+    width: 15vw;
+    max-width: 130px;
+    min-width: 90px;
     margin: 20px;
     vertical-align: bottom;
-    background-color: #c0c0c2;
+    background-color: #ececf0;
+    padding: 0;
+ }
+ .card > h4 {
+     margin-top: auto;
+     margin-bottom: 10px;
+ }
+ .card > div {
+     aspect-ratio: 4;
+     vertical-align: bottom;
+ }
+
+ .card > div > span {
+    border-bottom: 1px solid #aaa;
  }
 
  .card>div:hover {

@@ -15,7 +15,8 @@ const BookManager = (props) => {
     }
     props.customEventListener({action: 'addposition',
                                name: props.booksInfo.books[status[1]].bookName,
-                               color: props.booksInfo.books[status[1]].color});
+                               color: props.booksInfo.books[status[1]].color,
+                               elo: props.booksInfo.books[status[1]].elo});
   }
 
   // function called by the NewBookPopup component when it needs to interact with BookManager component
@@ -23,25 +24,32 @@ const BookManager = (props) => {
     if (status[0] != "adding book"){
       console.log("customEventListener_newbook was called but status is " + status);
     }
-    props.customEventListener({action: 'newbook', name: e.name, color: e.color });
+    props.customEventListener({action: 'newbook', name: e.name, color: e.color, elo: e.elo });
   }
 
   let booksInfoList = props.booksInfo.books.map(
-    (info, index) => <div key={info.bookName + ":" + info.color} className="card">
-      <h4 onClick={()=>{setStatus(['learning', info.bookName, 0])}}>{info.bookName}</h4>
-      <div onClick={()=>{props.customEventListener({action: 'reset'}); setStatus(["adding positions", index, 0]);}}>Add Position</div>
-      <div onClick={()=>{props.customEventListener({action: 'deletebook', name: info.bookName})}}>Delete Book</div>
-    </div>
+    (info, index) =>
+    <button key={info.bookName + ":" + info.color} className="card" onClick={()=>{setStatus(['learning', info.bookName, 0])}}>
+      <h4>{info.bookName + ", \n" + info.color + ", \n" + info.elo}</h4>
+      <div onClick={(e)=>{e.stopPropagation();props.customEventListener({action: 'reset'}); setStatus(["adding positions", index, 0]);}}>
+        <span>Add to</span>
+      </div>
+      <div onClick={(e)=>{e.stopPropagation();props.customEventListener({action: 'deletebook', name: info.bookName})}}>
+        <span>delete</span>
+      </div>
+    </button>
   )
 
   return(
     <>
       <div className="BookManager">
-        {booksInfoList}
-        <div className="card">
-          <div onClick={()=>{props.customEventListener({action: 'reset'});
-                                            setStatus(["adding book", 0, 0]);
-                                            }}>New Book</div>
+        <div className='flexboxContainer'>
+          {booksInfoList}
+          <button className="card" onClick={()=>{props.customEventListener({action: 'reset'});
+                                              setStatus(["adding book", 0, 0]);
+                                              }}>
+            <span>New Book</span>
+          </button>
         </div>
       </div>
       { status[0] === "adding positions" && <AddPositionPopup customEventListener={customEventListener_addposition}></AddPositionPopup> }

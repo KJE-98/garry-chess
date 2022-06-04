@@ -8,20 +8,34 @@ import ChessboardMask from './components/ChessboardMask/ChessboardMask';
 import { Chess } from 'chess.js';
 import * as Functions from './ImportantFunctions.js';
 import axios from 'axios';
-import Popup from 'reactjs-popup';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 function App() {
 
   // all the main data needed for the application should be declared here
-  const [booksInfo, setBooksInfo] = useState([{title: 'Default 1'}]);
   const [game, setGame] = useState(new Chess());
   const [userID, setUserID] = useState("");
-  const [userInfoFromDB, setUserInfoFromDB] = useState({books: [{bookName: "defualt", color: 'w', positions: []}]});
+  const [userInfoFromDB, setUserInfoFromDB] = useState(
+    {
+      books: [
+        {
+          bookName: "default",
+          color: 'w',
+          elo: 700,
+          positions: Functions.defaultPositions
+        }
+      ]
+    }
+  );
   const [status, setStatus] = useState([0,0,0]);
   const [sqstyles, setSqstyles] = useState({});
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // API calls
 
+  console.log(toString(userInfoFromDB.books[0].positions));
   async function getUserData(userid) {
     try {
       let response = await axios.get("http://localhost:5000/users", { params: { id: userid } } );
@@ -42,13 +56,16 @@ function App() {
       let response = await axios.post("http://localhost:5000/users/recordUser", { id: userid });
       if (response.status === 204){
         console.log("new user created");
+        return true;
       }else {
         console.log("Error inn newUser");
         console.log(response);
+        return false;
       }
     } catch (e) {
       console.log("Error in newUser");
       console.log(e);
+      return false;
     }
   }
 
@@ -56,7 +73,7 @@ function App() {
     try {
       let response = await axios.post("http://localhost:5000/users/addToBook", { id: userid, bookName: bookName, positions: positions});
       if (response.status === 204){
-        console.log("positions added");
+        openSnackbar("positions added");
       }else {
         console.log("Error inn addPositions");
         console.log(response);
@@ -68,13 +85,12 @@ function App() {
   }
 
   async function deleteBook(userid, bookName) {
-    console.log("in delete book");
     try {
       console.log("before axios.delete in del book");
       let response = await axios.delete(`http://localhost:5000/deleteBook/${userid}/${bookName}`);
       console.log("after response in delete book");
       if (response.status === 204){
-        console.log("book deleted");
+        openSnackbar("book deleted");
       }else {
         console.log("Error inn deleteBook");
         console.log(response);
@@ -85,11 +101,11 @@ function App() {
     }
   }
 
-  async function createBook(userid, bookName, color) {
+  async function createBook(userid, bookName, color, elo) {
     try {
-      let response = await axios.post("http://localhost:5000/createBook", { id: userid, bookName: bookName, color: color});
+      let response = await axios.post("http://localhost:5000/createBook", { id: userid, bookName: bookName, color: color, elo: elo});
       if (response.status === 204){
-        console.log("book created");
+        openSnackbar("new book created");
       }else {
         console.log("Error inn createBook");
         console.log(response);
@@ -106,29 +122,31 @@ function App() {
     setUserInfoFromDB(newData[0]);
     console.log("data was set to");
     console.log(newData[0]);
+    return cbreturn;
   }
 
   // functions that will be called directly (besides getUserData)
-  async function newBook(bookName, color){
+  async function newBook(bookName, color, elo){
     console.log("newBook with name " + bookName);
-    await safeChangeData(createBook, userID, bookName, color);
+    await safeChangeData(createBook, userID, bookName, color, elo);
   }
 
-  async function newPositions(bookName, color) {
-    console.log("new positions to " + bookName);
-    let positions = await Functions.generatePositions(game.fen(), color, 1000);
-    console.log("pso");
-    console.log(positions);
+  async function newPositions(bookName, color, elo) {
+    let positions = await Functions.generatePositions(game.fen(), color, elo);
     await safeChangeData(addPositions, userID, bookName, positions);
-    console.log("after safe add pos");
   }
 
   async function newUser(userid) {
     if (userid < 10){
-      console.log("idtooshort");
-      //handleError("idtooshort");
+      openSnackbar("id must be at least 10 characters")
     } else {
-      await safeChangeData(addUser, userid);
+      let userAdded = await safeChangeData(addUser, userid);
+      if (userAdded) {
+        setUserID(userid);
+        openSnackbar("logged in as " + userid);
+      } else {
+        openSnackbar("couldn't log in");
+      }
     }
   }
 
@@ -160,32 +178,45 @@ function App() {
 
   // function called by the Dropdown when it needs to interact with App component
   let customEventListener_dropdown = async (e) => {
-    setStatus([0,0,0]);
+
+    console.log(e);
 
     if (e.action === "reset")
       newGame();
     if (e.action === "deletebook")
       removeBook(e.name);
     if (e.action === "addposition")
-      newPositions(e.name, e.color);
+      newPositions(e.name, e.color, e.elo);
     if (e.action === "newbook")
-      newBook(e.name, e.color);
+      newBook(e.name, e.color, e.elo);
   };
 
   // function called by the topbar when it needs to interact with App component
   let customEventListener_topbar = async (e) => {
     if (e.action === "login"){
-      setUserID(e.id);
       let userData = await getUserData(e.id);
+      console.log(userData);
       if (Array.isArray(userData) && userData.length > 0){
         setUserInfoFromDB(userData[0]);
+        setUserID(e.id);
+        openSnackbar("logged in");
+      } else if (Array.isArray(userData) && userData.length === 0) {
+        openSnackbar("no user of that name");
       } else {
-        //handleError();
+        openSnackbar("problem logging in");
       }
-    } else if (e.action === "createuserid") {
+    } else if (e.action === "createid") {
       newUser(e.id);
     }
   };
+
+  function openSnackbar(message){
+    setSnackbarMessage(message);
+    setSnackOpen(true);
+  }
+  function snackbarClose(){
+    setSnackOpen(false);
+  }
 
   // Bunch of stuff for making moves on the Chess board
   function safeGameMutate(modify) {
@@ -235,18 +266,21 @@ function App() {
     let best = await Functions.getBestMove(fen);
     let guessIsBest = best.slice(0,2) === guess.from && best.slice(2,4) === guess.to;
     if (guessIsBest){
-
+      setSqstyles( { [best.slice(0,2)]: {backgroundColor: "lightblue"}, [best.slice(2,4)]: {backgroundColor: "lightblue"} } );
+      setStatus([status[0], status[1], "correct"]);
     }
     else {
+      setStatus([status[0], status[1], "incorrect"]);
       safeGameMutate((game)=>{game.undo()});
       setTimeout( ()=>{
         safeMakeMove({ from: best.slice(0,2), to: best.slice(2,4) });
         setSqstyles( { [best.slice(0,2)]: {backgroundColor: "orange"}, [best.slice(2,4)]: {backgroundColor: "orange"} } );},
-        500);
+        1000);
     }
   }
   let getNewPosition = () =>
   {
+    setStatus([status[0], status[1], 0]);
     let newPosition = randomPosition(status[1]);
     safeGameMutate(()=>game.load(newPosition));
   }
@@ -257,9 +291,15 @@ function App() {
       <Topbar customEventListener={customEventListener_topbar} userID={userID}></Topbar>
       <DropdownMenu booksInfo={userInfoFromDB} customEventListener={customEventListener_dropdown}
                     status={status} setStatus={setStatus}></DropdownMenu>
-      <ChessboardMask sqstyles={sqstyles} getNewPosition={getNewPosition} status={status} fen={game.fen()} onDrop={onDrop}></ChessboardMask>
-      <header className="App-header">
-      </header>
+      <ChessboardMask
+          booksInfo={userInfoFromDB} sqstyles={sqstyles}
+          getNewPosition={getNewPosition} status={status} fen={game.fen()} onDrop={onDrop}>
+      </ChessboardMask>
+      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={snackbarClose}>
+        <Alert onClose={snackbarClose} severity="success" sx={{ width: '100%' }}>
+         {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
