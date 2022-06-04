@@ -34,8 +34,6 @@ function App() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // API calls
-
-  console.log(toString(userInfoFromDB.books[0].positions));
   async function getUserData(userid) {
     try {
       let response = await axios.get("http://localhost:5000/users", { params: { id: userid } } );
@@ -119,9 +117,11 @@ function App() {
   async function safeChangeData(callback, userid, ...args) {
     let cbreturn = await callback(userid, ...args);
     let newData = await getUserData(userid);
-    setUserInfoFromDB(newData[0]);
-    console.log("data was set to");
-    console.log(newData[0]);
+    if (Array.isArray(newData) && newData.length > 0){
+      setUserInfoFromDB(newData[0]);
+      console.log("data was set to");
+      console.log(newData[0]);
+    }
     return cbreturn;
   }
 
