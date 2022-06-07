@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import './BookManager.css';
 import AddPositionPopup from '../AddPositionPopup/AddPositionPopup.js';
-import NewBookPopup from '../NewBookPopup/NewBookPopup.js'
+import NewBookPopup from '../NewBookPopup/NewBookPopup.js';
+import Popup from 'reactjs-popup';
 
 const BookManager = (props) => {
   let status = props.status;
@@ -37,9 +37,21 @@ const BookManager = (props) => {
       </div>
       }
       { props.userID &&
-      <div onClick={(e)=>{e.stopPropagation();props.customEventListener({action: 'deletebook', name: info.bookName})}}>
-        <span>delete</span>
-      </div>
+          <Popup trigger={ open => <div><span>Delete</span></div>} closeOnDocumentClick position="center center" modal>
+          {close =>
+            <div className='modal'>
+              <div className='header'> Are you sure? </div>
+              <button className='close' onClick={close}>&times;</button>
+              <div className='content'>
+                {' '}
+                Confirm you would like to delete book: {info.bookName}
+              </div>
+              <div className="actions">
+                <button onClick={(e)=>{e.stopPropagation();props.customEventListener({action: 'deletebook', name: info.bookName})}}>delete</button>
+              </div>
+            </div>
+          }
+        </Popup>
       }
     </button>
   )

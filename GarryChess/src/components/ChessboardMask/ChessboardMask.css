@@ -40,6 +40,7 @@
 }
 
 .sections >  .thin {
+    position: relative;
     height: 80px;
     width: calc(30vw + 20px);
     border-radius: 10px;
@@ -48,6 +49,7 @@
 }
 
 .sections >  .wide {
+    position: relative;
     height: 80px;
     width: calc(60vw + 20px);
     border-radius: 10px;
@@ -61,4 +63,18 @@
 
 .sections >  .wide:hover {
     box-shadow: 0px 0px 1px 1px rgb(111, 146, 146);
+}
+ .thin > button {
+     margin: 3px;
+     position: absolute;
+     top: 0px;
+     right: 0px;
+     font-size: calc(.8vw + .8vh);
+ }
+ .wide > button {
+    margin: 3px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: calc(.8vw + .7vh + 1.1vmin);
 }

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import './Topbar.css';
-import Spinner from '../Spinner/Spinner.js';
 import Popup from 'reactjs-popup';
 
 const Topbar = (props) => {

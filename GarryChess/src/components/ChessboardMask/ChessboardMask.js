@@ -15,6 +15,10 @@ const ChessboardMask = (props) => {
     setThinDisplay(window.innerWidth < 650);
   }
 
+  function deletePosition(){
+    props.removePosition();
+  }
+
   function statusMessage (status){
     if (status[0] === 0)
       return "To get started, log in or create a new user in the upper right";
@@ -45,6 +49,9 @@ const ChessboardMask = (props) => {
       return "to add to the book: " + props.booksInfo.books[status[1]].bookName + ", play until you reach the desired position on the board, "
       + "and click, \"auto generate positions\"";
     }
+    if (status[0] === "howToAddPositions"){
+      return "to add positions to your new book, click the \"add to\" button on the book";
+    }
   }
 
   return(
@@ -60,11 +67,21 @@ const ChessboardMask = (props) => {
                                          :                                    "#F6F6F9" }}>
           {statusMessage(props.status)}
         </div>
+        {props.status[0] === "learning" &&
+        <>
         <button className={ !thinDisplay ? 'thin' : 'wide' } onClick={props.getNewPosition}>
           <div>
             NEXT
           </div>
         </button>
+        { props.userID !== "" &&
+        <div>
+          <button onClick={deletePosition}> delete </button>
+          <span>this position from the book?</span>
+        </div>
+        }
+        </>
+        }
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import { Chess } from 'chess.js';
 const axios = require('axios');
 
 export async function getBestMove(rootPos) {
+  try{
     let rootFenCleaned = rootPos.split(' ').slice(0,3).join(' ');
     let response = await axios.get('https://lichess.org/api/cloud-eval', {
         params: {
@@ -12,9 +13,13 @@ export async function getBestMove(rootPos) {
     let result = response.data.pvs[0].moves.split(" ")[0];
     console.log(result);
     return cleanBestMove(rootPos, result);
+  } catch (e) {
+    return false;
+  }
 }
 
 export async function getELOspecificMoves(rootPos, elo){
+  try{
     let rootFenCleaned = rootPos.split(' ').slice(0,3).join(' ');
     let response = await axios.get('https://explorer.lichess.ovh/lichess', {
         params: {
@@ -31,6 +36,9 @@ export async function getELOspecificMoves(rootPos, elo){
     if (numMoves > 2)
       result.push(response.data.moves[2].uci);
     return result.map((move)=>cleanBestMove(rootPos,move));
+  } catch (e) {
+    return false;
+  }
 }
 
 export async function generatePositions(rootPos, color, eloLevel) {
@@ -52,10 +60,16 @@ export async function generatePositions(rootPos, color, eloLevel) {
         if (game.turn() === color){
           game.load(position);
           let move = await getBestMove(position);
+          if (!move){
+            continue;
+          }
           game.move({ from: move.slice(0,2), to: move.slice(2,4) });
           newPositions.push(game.fen());
         }else {
           let moves = await getELOspecificMoves(position, eloLevel);
+          if (!moves){
+            continue;
+          }
           for (let move of moves)
           {
             game.load(position);

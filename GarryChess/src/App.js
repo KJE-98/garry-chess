@@ -33,6 +33,8 @@ function App() {
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
+  let positionToDelete = null;
+
   // API calls
   async function getUserData(userid) {
     try {
@@ -71,14 +73,33 @@ function App() {
     try {
       let response = await axios.post("http://localhost:5000/users/addToBook", { id: userid, bookName: bookName, positions: positions});
       if (response.status === 204){
-        openSnackbar("positions added");
+        return true;
       }else {
         console.log("Error inn addPositions");
         console.log(response);
+        return false;
       }
     } catch (e) {
       console.log("Error in addPositions");
       console.log(e);
+      return false;
+    }
+  }
+
+  async function updateScore(userid, bookName, amount) {
+    try {
+      let response = await axios.post("http://localhost:5000/users/updateScore", { id: userid, bookName: bookName, amount: amount});
+      if (response.status === 204){
+        return true;
+      }else {
+        console.log("Error inn updateScore");
+        console.log(response);
+        return false;
+      }
+    } catch (e) {
+      console.log("Error in updateScore");
+      console.log(e);
+      return false;
     }
   }
 
@@ -96,6 +117,23 @@ function App() {
     } catch (e) {
       console.log("Error in deleteBook");
       console.log(e);
+    }
+  }
+  ///deletePosition/:id/:bookName/:position
+  async function deletePosition(userid, bookName, fen) {
+    try {
+      let response = await axios.delete(`http://localhost:5000/deletePosition/${userid}/${bookName}/${fen}`);
+      if (response.status === 204){
+        return true;
+      }else {
+        console.log("Error inn deletePosition");
+        console.log(response);
+        return false;
+      }
+    } catch (e) {
+      console.log("Error in deletePosition");
+      console.log(e);
+      return false;
     }
   }
 
@@ -127,13 +165,24 @@ function App() {
 
   // functions that will be called directly (besides getUserData)
   async function newBook(bookName, color, elo){
-    console.log("newBook with name " + bookName);
+    for (let book of userInfoFromDB.books){
+      if (book.bookName === bookName){
+        openSnackbar("you already have a book of this name");
+        return;
+      }
+    }
     await safeChangeData(createBook, userID, bookName, color, elo);
+    setStatus(["howToAddPositions", 0, 0]);
   }
 
   async function newPositions(bookName, color, elo) {
     let positions = await Functions.generatePositions(game.fen(), color, elo);
-    await safeChangeData(addPositions, userID, bookName, positions);
+    let success = await safeChangeData(addPositions, userID, bookName, positions);
+    if (success) {
+      openSnackbar(positions.length + " positions added");
+    } else {
+      openSnackbar("problem adding positions");
+    }
   }
 
   async function newUser(userid) {
@@ -152,6 +201,23 @@ function App() {
 
   async function removeBook(bookName) {
     await safeChangeData(deleteBook, userID, bookName);
+  }
+
+  async function removePosition(){
+
+    if (status[0] !== "learning") {
+      openSnackbar("select a book first");
+      return;
+    }
+    console.log("here");
+    console.log(userInfoFromDB);
+    console.log(status[1]);
+    let success = await safeChangeData(deletePosition, userID, status[1], positionToDelete);
+    if (success){
+      openSnackbar("position deleted");
+    } else {
+      openSnackbar("problem deleting position");
+    }
   }
 
   function randomPosition(bookName) {
@@ -283,17 +349,20 @@ function App() {
     setStatus([status[0], status[1], 0]);
     let newPosition = randomPosition(status[1]);
     safeGameMutate(()=>game.load(newPosition));
+    positionToDelete = newPosition;
   }
 
   // return
   return (
     <div className="App">
+      <button onClick={()=>{updateScore(userID, "book1", 2)}}></button>
+      <button onClick={()=>{updateScore(userID, "book1", -2)}}></button>
       <Topbar customEventListener={customEventListener_topbar} userID={userID}></Topbar>
       <DropdownMenu userID={userID} booksInfo={userInfoFromDB} customEventListener={customEventListener_dropdown}
                     status={status} setStatus={setStatus}></DropdownMenu>
       <ChessboardMask
-          booksInfo={userInfoFromDB} sqstyles={sqstyles}
-          getNewPosition={getNewPosition} status={status} fen={game.fen()} onDrop={onDrop}>
+          booksInfo={userInfoFromDB} sqstyles={sqstyles} userID={userID}
+          getNewPosition={getNewPosition} status={status} fen={game.fen()} onDrop={onDrop} removePosition={removePosition}>
       </ChessboardMask>
       <Snackbar open={snackOpen} autoHideDuration={4000} onClose={snackbarClose}>
         <Alert onClose={snackbarClose} severity="success" sx={{ width: '100%' }}>
