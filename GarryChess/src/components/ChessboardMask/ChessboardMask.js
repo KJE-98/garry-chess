@@ -29,7 +29,7 @@ const ChessboardMask = (props) => {
                     {"Learning from book: " + status[1]}
                   </div>
                   <div>
-                    Correct
+                    Correct, score: {findScore(status[1])}
                   </div>
                 </>);
       }
@@ -39,11 +39,12 @@ const ChessboardMask = (props) => {
                     {"Learning from book: " + status[1]}
                   </div>
                   <div>
-                    Incorrect
+                    Incorrect, score: {findScore(status[1])}
                   </div>
+
                 </>);
       }
-      return "Learning from book: " + status[1];
+      return "Learning from book: " + status[1] + "score, " + findScore(status[1]);
     }
     if (status[0] === "adding positions"){
       return "to add to the book: " + props.booksInfo.books[status[1]].bookName + ", play until you reach the desired position on the board, "
@@ -52,6 +53,13 @@ const ChessboardMask = (props) => {
     if (status[0] === "howToAddPositions"){
       return "to add positions to your new book, click the \"add to\" button on the book";
     }
+  }
+
+  function findScore(bookName) {
+    let thebook = props.booksInfo.books.filter((book)=>book.bookName === bookName);
+    if (thebook.length > 0)
+        return thebook[0].score;
+    return 0;
   }
 
   return(

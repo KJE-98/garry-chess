@@ -11,6 +11,10 @@ import axios from 'axios';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
+let guesses = 0;
+let correctGuesses = 0;
+let positionToDelete = null;
+
 function App() {
 
   // all the main data needed for the application should be declared here
@@ -23,7 +27,8 @@ function App() {
           bookName: "default",
           color: 'w',
           elo: 700,
-          positions: Functions.defaultPositions
+          positions: Functions.defaultPositions,
+          score: 0,
         }
       ]
     }
@@ -32,8 +37,6 @@ function App() {
   const [sqstyles, setSqstyles] = useState({});
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-
-  let positionToDelete = null;
 
   // API calls
   async function getUserData(userid) {
@@ -87,6 +90,7 @@ function App() {
   }
 
   async function updateScore(userid, bookName, amount) {
+    if (!userID) return;
     try {
       let response = await axios.post("http://localhost:5000/users/updateScore", { id: userid, bookName: bookName, amount: amount});
       if (response.status === 204){
@@ -121,8 +125,9 @@ function App() {
   }
   ///deletePosition/:id/:bookName/:position
   async function deletePosition(userid, bookName, fen) {
+    console.log(userid, bookName, fen);
     try {
-      let response = await axios.delete(`http://localhost:5000/deletePosition/${userid}/${bookName}/${fen}`);
+      let response = await axios.delete(`http://localhost:5000/deletePosition/${userid}/${bookName}/`, { data: { position: fen }});
       if (response.status === 204){
         return true;
       }else {
@@ -245,8 +250,6 @@ function App() {
   // function called by the Dropdown when it needs to interact with App component
   let customEventListener_dropdown = async (e) => {
 
-    console.log(e);
-
     if (e.action === "reset")
       newGame();
     if (e.action === "deletebook")
@@ -255,10 +258,16 @@ function App() {
       newPositions(e.name, e.color, e.elo);
     if (e.action === "newbook")
       newBook(e.name, e.color, e.elo);
+    if (e.action === "startlearning"){
+      setStatus(['learning', e.name, 0]);
+      guesses = 0;
+      correctGuesses = 0;
+    }
   };
 
   // function called by the topbar when it needs to interact with App component
   let customEventListener_topbar = async (e) => {
+    setStatus([0,0,0]);
     if (e.action === "login"){
       let userData = await getUserData(e.id);
       console.log(userData);
@@ -332,10 +341,13 @@ function App() {
     let best = await Functions.getBestMove(fen);
     let guessIsBest = best.slice(0,2) === guess.from && best.slice(2,4) === guess.to;
     if (guessIsBest){
+      guesses++;
+      correctGuesses++;
       setSqstyles( { [best.slice(0,2)]: {backgroundColor: "lightblue"}, [best.slice(2,4)]: {backgroundColor: "lightblue"} } );
       setStatus([status[0], status[1], "correct"]);
     }
     else {
+      guesses++;
       setStatus([status[0], status[1], "incorrect"]);
       safeGameMutate((game)=>{game.undo()});
       setTimeout( ()=>{
@@ -343,6 +355,18 @@ function App() {
         setSqstyles( { [best.slice(0,2)]: {backgroundColor: "orange"}, [best.slice(2,4)]: {backgroundColor: "orange"} } );},
         1000);
     }
+    if (guesses > 9) {
+      console.log("here");
+      let amount = correctGuesses < 1 ? -5 :
+                   correctGuesses < 5 ? -3 :
+                   correctGuesses < 8 ? -1 :
+                   correctGuesses < 9 ? 1 :
+                   correctGuesses < 10 ? 2 : 5;
+      guesses = 0;
+      correctGuesses = 0;
+      safeChangeData(updateScore, userID, status[1], amount);
+    }
+    console.log(guesses);
   }
   let getNewPosition = () =>
   {

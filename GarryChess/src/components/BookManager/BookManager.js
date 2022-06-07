@@ -29,7 +29,8 @@ const BookManager = (props) => {
 
   let booksInfoList = props.booksInfo.books.map(
     (info, index) =>
-    <button key={info.bookName + ":" + info.color} className="card" onClick={()=>{setStatus(['learning', info.bookName, 0])}}>
+    <button key={info.bookName + ":" + info.color} className="card"
+            onClick={()=>{props.customEventListener({action: 'startlearning', name: info.bookName})}}>
       <h4>{info.bookName + ", \n" + info.color + ", \n" + info.elo}</h4>
       { props.userID !== "" &&
       <div onClick={(e)=>{e.stopPropagation();props.customEventListener({action: 'reset'}); setStatus(["adding positions", index, 0]);}}>
