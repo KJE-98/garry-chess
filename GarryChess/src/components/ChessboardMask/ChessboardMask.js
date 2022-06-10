@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './ChessboardMask.css';
 import Chessboard from 'chessboardjsx';
-
-
+import Progression from '../Progression/Progression';
 
 const ChessboardMask = (props) => {
 
@@ -58,7 +57,7 @@ const ChessboardMask = (props) => {
   function findScore(bookName) {
     let thebook = props.booksInfo.books.filter((book)=>book.bookName === bookName);
     if (thebook.length > 0)
-        return thebook[0].score;
+        return Math.max(0, Math.min(thebook[0].score,100));
     return 0;
   }
 
@@ -77,6 +76,7 @@ const ChessboardMask = (props) => {
         </div>
         {props.status[0] === "learning" &&
         <>
+        <Progression percent={findScore(props.status[1])}></Progression>
         <button className={ !thinDisplay ? 'thin' : 'wide' } onClick={props.getNewPosition}>
           <div>
             NEXT
