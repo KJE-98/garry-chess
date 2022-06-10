@@ -366,7 +366,6 @@ function App() {
       correctGuesses = 0;
       safeChangeData(updateScore, userID, status[1], amount);
     }
-    console.log(guesses);
   }
   let getNewPosition = () =>
   {

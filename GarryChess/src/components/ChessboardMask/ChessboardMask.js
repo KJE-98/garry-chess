@@ -5,6 +5,8 @@ import Chessboard from 'chessboardjsx';
 import Progression from '../Progression/Progression';
 
 const ChessboardMask = (props) => {
+  console.log("info");
+  console.log(props.booksInfo);
 
   let [thinDisplay, setThinDisplay] = useState(window.innerWidth < 650);
 
@@ -28,7 +30,7 @@ const ChessboardMask = (props) => {
                     {"Learning from book: " + status[1]}
                   </div>
                   <div>
-                    Correct, score: {findScore(status[1])}
+                    Correct, score: {findScore(status[1], props.booksInfo)}
                   </div>
                 </>);
       }
@@ -38,12 +40,12 @@ const ChessboardMask = (props) => {
                     {"Learning from book: " + status[1]}
                   </div>
                   <div>
-                    Incorrect, score: {findScore(status[1])}
+                    Incorrect, score: {findScore(status[1], props.booksInfo)}
                   </div>
 
                 </>);
       }
-      return "Learning from book: " + status[1] + "score, " + findScore(status[1]);
+      return "Learning from book: " + status[1] + "score, " + findScore(status[1], props.booksInfo);
     }
     if (status[0] === "adding positions"){
       return "to add to the book: " + props.booksInfo.books[status[1]].bookName + ", play until you reach the desired position on the board, "
@@ -54,8 +56,8 @@ const ChessboardMask = (props) => {
     }
   }
 
-  function findScore(bookName) {
-    let thebook = props.booksInfo.books.filter((book)=>book.bookName === bookName);
+  function findScore(bookName, booksInfo) {
+    let thebook = booksInfo.books.filter((book)=>book.bookName === bookName);
     if (thebook.length > 0)
         return Math.max(0, Math.min(thebook[0].score,100));
     return 0;
@@ -76,7 +78,7 @@ const ChessboardMask = (props) => {
         </div>
         {props.status[0] === "learning" &&
         <>
-        <Progression percent={findScore(props.status[1])}></Progression>
+        <Progression percent={findScore(props.status[1], props.booksInfo)}></Progression>
         <button className={ !thinDisplay ? 'thin' : 'wide' } onClick={props.getNewPosition}>
           <div>
             NEXT

@@ -26,6 +26,16 @@ const Progression = (props) => (
               alt=""
               style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}
               width="30"
+              src="chestnutbaby.png"
+            />
+          )}
+        </Step>
+        <Step transition="scale">
+          {({ accomplished }) => (
+            <img
+              alt=""
+              style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}
+              width="30"
               src="chestnutsapling.png"
             />
           )}
@@ -36,7 +46,7 @@ const Progression = (props) => (
               alt=""
               style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}
               width="30"
-              src="https://orig00.deviantart.net/493a/f/2017/095/5/4/raichu_icon_by_pokemonshuffle_icons-db4ryym.png"
+              src="chestnuttree.png"
             />
           )}
         </Step>
