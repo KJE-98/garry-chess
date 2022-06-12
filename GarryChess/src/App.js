@@ -378,8 +378,6 @@ function App() {
   // return
   return (
     <div className="App">
-      <button onClick={()=>{updateScore(userID, "book1", 2)}}></button>
-      <button onClick={()=>{updateScore(userID, "book1", -2)}}></button>
       <Topbar customEventListener={customEventListener_topbar} userID={userID}></Topbar>
       <DropdownMenu userID={userID} booksInfo={userInfoFromDB} customEventListener={customEventListener_dropdown}
                     status={status} setStatus={setStatus}></DropdownMenu>
