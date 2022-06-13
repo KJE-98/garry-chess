@@ -5,8 +5,6 @@ import Chessboard from 'chessboardjsx';
 import Progression from '../Progression/Progression';
 
 const ChessboardMask = (props) => {
-  console.log("info");
-  console.log(props.booksInfo);
 
   let [thinDisplay, setThinDisplay] = useState(window.innerWidth < 650);
 
