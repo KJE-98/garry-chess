@@ -7,7 +7,7 @@ const express = require('express');
 // get MongoDB driver connection
 const dbo = require('./db/conn');
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 const app = express();
 
