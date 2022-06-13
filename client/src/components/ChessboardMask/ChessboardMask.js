@@ -43,7 +43,7 @@ const ChessboardMask = (props) => {
 
                 </>);
       }
-      return "Learning from book: " + status[1] + "score, " + findScore(status[1], props.booksInfo);
+      return "Learning from book: " + status[1] + ", score: " + findScore(status[1], props.booksInfo);
     }
     if (status[0] === "adding positions"){
       return "to add to the book: " + props.booksInfo.books[status[1]].bookName + ", play until you reach the desired position on the board, "
