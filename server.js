@@ -8,12 +8,14 @@ const express = require('express');
 const dbo = require('./db/conn');
 
 const PORT = process.env.PORT || 5000;
+
 const app = express();
 
 app.use(express.static(path.join(__dirname, "client", "build")));
-app.use(cors());
 app.use(express.json());
 app.use(require('./routes/record'));
+
+app.use(cors());
 
 // Global error handling
 app.use(function (err, _req, res, next) {
