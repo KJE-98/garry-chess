@@ -41,7 +41,7 @@ function App() {
   // API calls
   async function getUserData(userid) {
     try {
-      let response = await axios.get("http://localhost:5000/users", { params: { id: userid } } );
+      let response = await axios.get("/users", { params: { id: userid } } );
       if (response.statusText === "OK"){
         return response.data;
       }else {
@@ -56,7 +56,7 @@ function App() {
 
   async function addUser(userid) {
     try {
-      let response = await axios.post("http://localhost:5000/users/recordUser", { id: userid });
+      let response = await axios.post("/users/recordUser", { id: userid });
       if (response.status === 204){
         console.log("new user created");
         return true;
@@ -74,7 +74,7 @@ function App() {
 
   async function addPositions(userid, bookName, positions) {
     try {
-      let response = await axios.post("http://localhost:5000/users/addToBook", { id: userid, bookName: bookName, positions: positions});
+      let response = await axios.post("/users/addToBook", { id: userid, bookName: bookName, positions: positions});
       if (response.status === 204){
         return true;
       }else {
@@ -92,7 +92,7 @@ function App() {
   async function updateScore(userid, bookName, amount) {
     if (!userID) return;
     try {
-      let response = await axios.post("http://localhost:5000/users/updateScore", { id: userid, bookName: bookName, amount: amount});
+      let response = await axios.post("/users/updateScore", { id: userid, bookName: bookName, amount: amount});
       if (response.status === 204){
         return true;
       }else {
@@ -110,7 +110,7 @@ function App() {
   async function deleteBook(userid, bookName) {
     try {
       console.log("before axios.delete in del book");
-      let response = await axios.delete(`http://localhost:5000/deleteBook/${userid}/${bookName}`);
+      let response = await axios.delete(`/deleteBook/${userid}/${bookName}`);
       console.log("after response in delete book");
       if (response.status === 204){
         openSnackbar("book deleted");
@@ -127,7 +127,7 @@ function App() {
   async function deletePosition(userid, bookName, fen) {
     console.log(userid, bookName, fen);
     try {
-      let response = await axios.delete(`http://localhost:5000/deletePosition/${userid}/${bookName}/`, { data: { position: fen }});
+      let response = await axios.delete(`/deletePosition/${userid}/${bookName}/`, { data: { position: fen }});
       if (response.status === 204){
         return true;
       }else {
@@ -144,7 +144,7 @@ function App() {
 
   async function createBook(userid, bookName, color, elo) {
     try {
-      let response = await axios.post("http://localhost:5000/createBook", { id: userid, bookName: bookName, color: color, elo: elo});
+      let response = await axios.post("/createBook", { id: userid, bookName: bookName, color: color, elo: elo});
       if (response.status === 204){
         openSnackbar("new book created");
       }else {
