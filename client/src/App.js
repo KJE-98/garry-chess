@@ -38,10 +38,12 @@ function App() {
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
+  const apistring = "";
+
   // API calls
   async function getUserData(userid) {
     try {
-      let response = await axios.get("/users", { params: { id: userid } } );
+      let response = await axios.get(apistring+"/users", { params: { id: userid } } );
       if (response.statusText === "OK"){
         return response.data;
       }else {
@@ -56,7 +58,7 @@ function App() {
 
   async function addUser(userid) {
     try {
-      let response = await axios.post("/users/recordUser", { id: userid });
+      let response = await axios.post(apistring+"/users/recordUser", { id: userid });
       if (response.status === 204){
         console.log("new user created");
         return true;
@@ -74,7 +76,7 @@ function App() {
 
   async function addPositions(userid, bookName, positions) {
     try {
-      let response = await axios.post("/users/addToBook", { id: userid, bookName: bookName, positions: positions});
+      let response = await axios.post(apistring+"/users/addToBook", { id: userid, bookName: bookName, positions: positions});
       if (response.status === 204){
         return true;
       }else {
@@ -92,7 +94,7 @@ function App() {
   async function updateScore(userid, bookName, amount) {
     if (!userID) return;
     try {
-      let response = await axios.post("/users/updateScore", { id: userid, bookName: bookName, amount: amount});
+      let response = await axios.post(apistring+"/users/updateScore", { id: userid, bookName: bookName, amount: amount});
       if (response.status === 204){
         return true;
       }else {
@@ -110,7 +112,7 @@ function App() {
   async function deleteBook(userid, bookName) {
     try {
       console.log("before axios.delete in del book");
-      let response = await axios.delete(`/deleteBook/${userid}/${bookName}`);
+      let response = await axios.delete(apistring+`/deleteBook/${userid}/${bookName}`);
       console.log("after response in delete book");
       if (response.status === 204){
         openSnackbar("book deleted");
@@ -127,7 +129,7 @@ function App() {
   async function deletePosition(userid, bookName, fen) {
     console.log(userid, bookName, fen);
     try {
-      let response = await axios.delete(`/deletePosition/${userid}/${bookName}/`, { data: { position: fen }});
+      let response = await axios.delete(apistring+`/deletePosition/${userid}/${bookName}/`, { data: { position: fen }});
       if (response.status === 204){
         return true;
       }else {
@@ -144,7 +146,7 @@ function App() {
 
   async function createBook(userid, bookName, color, elo) {
     try {
-      let response = await axios.post("/createBook", { id: userid, bookName: bookName, color: color, elo: elo});
+      let response = await axios.post(apistring+"/createBook", { id: userid, bookName: bookName, color: color, elo: elo});
       if (response.status === 204){
         openSnackbar("new book created");
       }else {
@@ -162,8 +164,6 @@ function App() {
     let newData = await getUserData(userid);
     if (Array.isArray(newData) && newData.length > 0){
       setUserInfoFromDB(newData[0]);
-      console.log("data was set to");
-      console.log(newData[0]);
     }
     return cbreturn;
   }
@@ -181,6 +181,7 @@ function App() {
   }
 
   async function newPositions(bookName, color, elo) {
+    openSnackbar("adding positions, please wait");
     let positions = await Functions.generatePositions(game.fen(), color, elo);
     let success = await safeChangeData(addPositions, userID, bookName, positions);
     if (success) {
@@ -274,6 +275,7 @@ function App() {
       if (Array.isArray(userData) && userData.length > 0){
         setUserInfoFromDB(userData[0]);
         setUserID(e.id);
+        setStatus(["nobooks", 0, 0]);
         openSnackbar("logged in");
       } else if (Array.isArray(userData) && userData.length === 0) {
         openSnackbar("no user of that name");
@@ -282,6 +284,7 @@ function App() {
       }
     } else if (e.action === "createid") {
       newUser(e.id);
+      setStatus(["nobooks", 0, 0]);
     }
   };
 
@@ -312,15 +315,7 @@ function App() {
       game.reset();
     });
   }
-  async function makeGoodMove() {
-    const possibleMoves = game.moves();
-    if (game.game_over() || game.in_draw() || possibleMoves.length === 0){
-      return;
-    }
-    let bestMoves = await Functions.getELOspecificMoves(game.fen(), 900);
-    let bestMove = bestMoves[0];
-    safeMakeMove({ from: bestMove.slice(0,2), to: bestMove.slice(2,4) });
-  }
+
   function onDrop(pieceMove) {
     let move = null;
     let prevFen = game.fen();
@@ -356,7 +351,6 @@ function App() {
         1000);
     }
     if (guesses > 9) {
-      console.log("here");
       let amount = correctGuesses < 1 ? -5 :
                    correctGuesses < 5 ? -3 :
                    correctGuesses < 8 ? -1 :

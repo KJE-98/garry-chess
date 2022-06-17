@@ -52,6 +52,9 @@ const ChessboardMask = (props) => {
     if (status[0] === "howToAddPositions"){
       return "to add positions to your new book, click the \"add to\" button on the book";
     }
+    if (status[0] === "nobooks"){
+      return "to add a book, open \"Manage Books\" dropdown and click the \"new book\" card"
+    }
   }
 
   function findScore(bookName, booksInfo) {
