@@ -125,7 +125,7 @@ function App() {
       console.log(e);
     }
   }
-  ///deletePosition/:id/:bookName/:position
+  ///deletePosition/:id/:bookName/
   async function deletePosition(userid, bookName, fen) {
     console.log(userid, bookName, fen);
     try {

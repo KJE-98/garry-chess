@@ -55,6 +55,9 @@ const ChessboardMask = (props) => {
     if (status[0] === "nobooks"){
       return "to add a book, open \"Manage Books\" dropdown and click the \"new book\" card"
     }
+    if (status[0] === "adding book"){
+      return "choose a name for the book, decide which side to play as, and choose an elo level for your opponent (used when auto generating positions)"
+    }
   }
 
   function findScore(bookName, booksInfo) {
