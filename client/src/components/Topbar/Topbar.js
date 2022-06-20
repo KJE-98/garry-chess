@@ -16,7 +16,7 @@ const Topbar = (props) => {
     <h2>
         Garry Chess
     </h2>
-    <h3> {props.userID ? props.userID : " not logged in "} </h3>
+    <h4> {props.userID ? props.userID : " not logged in "} </h4>
     <Popup trigger={ open => <button>Login/Create Account</button>} closeOnDocumentClick position="center center" modal>
       {close =>
         <div className='modal'>
