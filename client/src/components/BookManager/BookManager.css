@@ -1,6 +1,7 @@
 .BookManager {
     max-height: 500px;
     cursor: pointer;
+    background-color: #8f8f8f;
 }
 
 .card {
@@ -31,5 +32,5 @@
  }
 
  .card>div:hover {
-     background-color: #8f8f8f;
+     background-color: #d1d1de;
  }
