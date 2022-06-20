@@ -2,6 +2,7 @@
     max-height: 500px;
     cursor: pointer;
     background-color: #bfbfbf;
+    border-bottom: 1px solid;
 }
 
 .card {
