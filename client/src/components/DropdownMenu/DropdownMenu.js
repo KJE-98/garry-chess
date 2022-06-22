@@ -13,7 +13,7 @@ const DropdownMenu = (props) =>{
     props.customEventListener(e);
   }
   return (
-    <div className="DropdownMenu">
+    <div className="DropdownMenu" id="dropdownmenu" >
       <button className="DropdownMenuButton" onClick={(e) => {e.preventDefault(); return setExpanded(!expanded)}}>Manage Books</button>
       { expanded && <BookManager booksInfo={props.booksInfo}
                                  customEventListener={customEventListener_bookmanager}

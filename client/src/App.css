@@ -1,3 +1,35 @@
+.center-screen {
+  margin-top: 50vh;
+  text-align: center;
+}
+
+.overlay {
+  font-size: medium;
+  position: fixed; /* Sit on top of the page content */
+  /*display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /*background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+.tutorial-instruction {
+  position: absolute;
+  background-color: lightgray;
+  z-index: 100;
+  margin: 250px 10px;
+  padding: 10px;
+  border-radius: 3px;
+  opacity: 100;
+}
+ .tutorial-focus {
+  box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .5);
+ }
+
 .App {
   text-align: center;
   background-color: #f0f0f5;
@@ -41,6 +73,9 @@ button:hover{
 }
 input {
   margin: 5px;
+}
+.DropdownMenu {
+  position: relative;
 }
 
 @keyframes App-logo-spin {

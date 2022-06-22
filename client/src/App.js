@@ -38,7 +38,7 @@ function App() {
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  const apistring = "";
+  const apistring = "http://localhost:5000";
 
   // API calls
   async function getUserData(userid) {
@@ -199,8 +199,10 @@ function App() {
       if (userAdded) {
         setUserID(userid);
         openSnackbar("logged in as " + userid);
+        startTutorial();
+
       } else {
-        openSnackbar("couldn't log in");
+        openSnackbar("couldn't create user in");
       }
     }
   }
@@ -248,17 +250,77 @@ function App() {
 
   // Event handling
 
+  function startTutorial() {
+    let tutorialOverlay = document.createElement('div');
+    tutorialOverlay.classList.add('overlay');
+
+    let askForTutorial = document.createElement('div');
+    askForTutorial.classList.add("center-screen");
+    askForTutorial.style.backgroundColor = "rgba(255, 255, 255, .5)"
+
+    let askForTutorialText = document.createTextNode("You seem to be a new user, would you like a tutorial?");
+    askForTutorial.appendChild(askForTutorialText);
+
+    let askForTutorialButton = document.createElement("button");
+    askForTutorialButton.textContent = "yes";
+
+    let dontAskForTutorialButton = document.createElement("button");
+    dontAskForTutorialButton.textContent = 'no';
+
+    askForTutorialButton.addEventListener('click', doTutorial);
+    dontAskForTutorialButton.addEventListener('click', ()=>tutorialOverlay.remove());
+    tutorialOverlay.appendChild(askForTutorial);
+    askForTutorial.appendChild(askForTutorialButton);
+    askForTutorial.appendChild(dontAskForTutorialButton);
+    askForTutorial.classList.add("tutorial-focus");
+    document.getElementById('root').appendChild(tutorialOverlay);
+
+    function doTutorial(){
+      tutorialOverlay.remove();
+      let tutorialInstruction = document.createElement("div");
+      let tutorialInstructionText = document.createTextNode("click the Manage Books dropdown button");
+      tutorialInstruction.classList.add('tutorial-instruction');
+      tutorialInstruction.appendChild(tutorialInstructionText);
+      document.getElementById("dropdownmenu").appendChild(tutorialInstruction);
+      document.getElementById("dropdownmenu").classList.add("tutorial-focus");
+      document.getElementById("dropdownmenu").addEventListener('click', function wrapperFunc(){do_tutorial_add_book(tutorialInstructionText, wrapperFunc)});
+    }
+
+    function do_tutorial_add_book (tutorialInstructionText, wrapper) {
+      document.getElementById("dropdownmenu").removeEventListener('click', wrapper);
+      tutorialInstructionText.textContent = "Click the new book card and fill in the form to create a new book. Set the toggle to white, and the elo to 700, then press the outlined create book button. Name it whatever you like.";
+      document.addEventListener("newbookcreated", function wrapperFunc(){do_tutorial_add_positions(tutorialInstructionText, wrapperFunc)});
+    }
+
+    function do_tutorial_add_positions (tutorialInstructionText, wrapper)
+    {
+      document.removeEventListener("newbookcreated",wrapper);
+      tutorialInstructionText.textContent = "Once the book is created you will see it in the dropdown. Click the add positions button on your new book to add some positions to it.";
+      document.addEventListener("addingpositions", do_tutorial_generate_positions);
+    }
+
+    function do_tutorial_generate_positions(){
+      document.removeEventListener("addingpositions", do_tutorial_generate_positions);
+      document.getElementsByClassName("tutorial-instruction")[0].remove();
+      document.getElementsByClassName("tutorial-focus")[0].classList.remove('tutorial-focus');
+    }
+  }
+
   // function called by the Dropdown when it needs to interact with App component
   let customEventListener_dropdown = async (e) => {
 
     if (e.action === "reset")
       newGame();
-    if (e.action === "deletebook")
+    if (e.action === "deletebook"){
       removeBook(e.name);
+      setStatus(["bookdeleted",0,0]);
+    }
     if (e.action === "addposition")
       newPositions(e.name, e.color, e.elo);
-    if (e.action === "newbook")
+    if (e.action === "newbook"){
       newBook(e.name, e.color, e.elo);
+      document.dispatchEvent(new Event("newbookcreated"));
+    }
     if (e.action === "startlearning"){
       setStatus(['learning', e.name, 0]);
       guesses = 0;
