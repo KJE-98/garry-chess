@@ -38,7 +38,7 @@ function App() {
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  const apistring = "http://localhost:5000";
+  const apistring = "";
 
   // API calls
   async function getUserData(userid) {
