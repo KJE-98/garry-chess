@@ -1,4 +1,3 @@
-
 // Fix castling issue with lichess
 import './App.css';
 import React, { useState } from 'react';

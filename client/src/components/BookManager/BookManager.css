@@ -1,7 +1,7 @@
 .BookManager {
     max-height: 500px;
     cursor: pointer;
-    background-color: #bfbfbf;
+    background-color: rgba(191, 191, 191, .5);
     border-bottom: 1px solid;
 }
 

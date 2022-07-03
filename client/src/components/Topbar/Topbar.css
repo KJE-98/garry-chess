@@ -10,6 +10,7 @@
 .Topbar {
     text-align: left;
     height: 60px;
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .Topbar > input {
